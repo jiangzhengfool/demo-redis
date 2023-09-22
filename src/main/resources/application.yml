@@ -1,0 +1,11 @@
+spring:
+  cache:
+    # 一般来说是不用配置的，Spring Cache 会根据依赖的包自行装配
+    type: redis
+  data:
+    redis:
+      timeout: 10000ms
+      host: localhost
+logging:
+  level:
+    com.xkcoding: debug
