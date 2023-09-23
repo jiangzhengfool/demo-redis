@@ -30,15 +30,15 @@ public class CustomizerRedisCacheManager extends RedisCacheManager {
 
     @Override
     public RedisCache createRedisCache(String cacheName, RedisCacheConfiguration redisCacheConfiguration) {
-        Method method = cacheTtlAspject.getCacheNameMethodCache().get(cacheName);
-        if (method != null) {
-            TimeToLive timeToLive = AnnotationUtils.findAnnotation(method, TimeToLive.class);
-            assert timeToLive != null;
-            Duration expirationTime = getExpirationTime(cacheName, timeToLive.timeUnit(), timeToLive.ttl());
-            redisCacheConfiguration = redisCacheConfiguration.entryTtl(expirationTime);
-        }else{
+//        Method method = cacheTtlAspject.getCacheNameMethodCache().get(cacheName);
+//        if (method != null) {
+//            TimeToLive timeToLive = AnnotationUtils.findAnnotation(method, TimeToLive.class);
+//            assert timeToLive != null;
+//            Duration expirationTime = getExpirationTime(cacheName, timeToLive.timeUnit(), timeToLive.ttl());
+//            redisCacheConfiguration = redisCacheConfiguration.entryTtl(expirationTime);
+//        }else{
             redisCacheConfiguration = redisCacheConfiguration.entryTtl(Duration.ofSeconds(111));
-        }
+//        }
 
         return super.createRedisCache(cacheName, redisCacheConfiguration);
     }
