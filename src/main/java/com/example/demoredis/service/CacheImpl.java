@@ -4,6 +4,7 @@ import com.example.demoredis.annotations.TimeToLive;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Policy;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,9 @@ import java.util.function.Function;
 @Service
 //@Scope("prototype")
 @Slf4j
+@Data
 public class CacheImpl implements Cache<Object, Object>{
+    private  Integer ttl  = 60*60;
     @Autowired
     private StringRedisTemplate redisTemplate;
     @Nullable
@@ -39,15 +42,25 @@ public class CacheImpl implements Cache<Object, Object>{
     }
 
     @Nullable
-    @CachePut(value = "value#3", key = "#key")
-//    @TimeToLive
     @Override
     public Object get(@Nonnull Object key, @Nonnull Function<? super Object, ?> mappingFunction) {
+        Object result = getIfPresent(key);
+        if (result ==null){
+            result = get(key,mappingFunction,this.ttl);
+         }
+        return result ;
+    }
+
+    @Nullable
+    @CachePut(value = "value#3", key = "#key")
+    public Object get(@Nonnull Object key, @Nonnull Function<? super Object, ?> mappingFunction,int ttl) {
         val apply = mappingFunction.apply(key);
-        redisTemplate.keys("*");
-//        redisTemplate.expire("value#3::123", 60 * 10, TimeUnit.SECONDS);
+//        redisTemplate.keys("*");
+        Boolean expire = redisTemplate.expire("value#3::" + key, ttl, TimeUnit.SECONDS);
+        assert expire;
         return apply ;
     }
+
 
     @Nonnull
     @Override
@@ -110,5 +123,6 @@ public class CacheImpl implements Cache<Object, Object>{
     public Policy<Object, Object> policy() {
         return null;
     }
+
 
 }
