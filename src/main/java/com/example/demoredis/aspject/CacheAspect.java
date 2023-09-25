@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -54,25 +55,40 @@ public class CacheAspect  {
         //拼接解析springEl表达式的map
         String[] paramNames = signature.getParameterNames();
         Object[] args = point.getArgs();
+
         TreeMap<String, Object> treeMap = new TreeMap<>();
         for (int i = 0; i < paramNames.length; i++) {
-            treeMap.put(paramNames[i],args[i]);
+            treeMap.put(paramNames[i], args[i]);
         }
+
+
+        // 获取超时时间
+
+        Field fTTL = point.getTarget().getClass().getDeclaredField("ttl");
+        fTTL.setAccessible(true);
+        int ttl = (int) fTTL.get(point.getTarget());
+
+
+        // prefix 前缀
+        Field f = point.getTarget().getClass().getDeclaredField("prefix");
+        f.setAccessible(true);
+        String prefix = (String) f.get(point.getTarget());
 
         DoubleCache annotation = method.getAnnotation(DoubleCache.class);
         String elResult = ElParser.parse(annotation.key(), treeMap);
-        String realKey = annotation.cacheName()  + elResult;
+        String realKey = annotation.cacheName() + prefix + elResult;
+
 
         //强制更新
-        if (annotation.type()== CacheType.PUT){
+        if (annotation.type() == CacheType.PUT) {
 //            Object object = point.proceed();
             Object object = ElParser.parse("#val", treeMap);
-            redisTemplate.opsForValue().set(realKey, object, annotation.l2TimeOut(), TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(realKey, object, ttl, TimeUnit.SECONDS);
             cache.put(realKey, object);
             return object;
         }
         //删除
-        else if (annotation.type()== CacheType.DELETE){
+        else if (annotation.type() == CacheType.DELETE) {
             redisTemplate.delete(realKey);
             cache.invalidate(realKey);
             return point.proceed();
@@ -99,7 +115,7 @@ public class CacheAspect  {
         Object object = point.proceed();
         if (Objects.nonNull(object)){
             //写入Redis
-            redisTemplate.opsForValue().set(realKey, object,annotation.l2TimeOut(), TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(realKey, object, ttl, TimeUnit.SECONDS);
             //写入Caffeine
             cache.put(realKey, object);
         }

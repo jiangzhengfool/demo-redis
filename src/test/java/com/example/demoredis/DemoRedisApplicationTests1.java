@@ -10,19 +10,19 @@ import javax.annotation.Resource;
 import java.util.Collections;
 
 @SpringBootTest
-class DemoRedisApplicationTests {
+class DemoRedisApplicationTests1 {
 	@Resource(name = "cacheImpl")
 	private CacheImpl cache;
 
 	@Test
 	void contextLoads() {
 	}
+
 	@Test
 	public void test01() {
-		cache.setTtl(600);
-		cache.setPrefix("ttl");
 
-		Cache cache234 = (Cache) cache.get("1748", (key) -> {
+		cache.setTtl(6000);
+		Cache cache234 = (Cache) cache.get("1747", (key) -> {
 			return cache.get(key, k -> Caffeine
 					.newBuilder()
 					.maximumSize(1_0000)
@@ -32,6 +32,7 @@ class DemoRedisApplicationTests {
 
 
 	}
+
 	@Test
 	public void test() {
 //		String elString="#order.money";
@@ -57,6 +58,7 @@ class DemoRedisApplicationTests {
 		System.out.println(cache.getIfPresent("3334"));
 		System.out.println(cache.getIfPresent("3334"));
 	}
+
 	@Test
 	public void test03() {
 

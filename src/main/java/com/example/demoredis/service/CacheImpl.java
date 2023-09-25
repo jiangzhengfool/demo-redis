@@ -6,10 +6,12 @@ import com.example.demoredis.enums.CacheType;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Policy;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
@@ -17,19 +19,30 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
-//@Scope("prototype")
+@Scope("prototype")
+@Data
 @Service
 @Slf4j
-public class CacheImpl implements  Cache{
-    @DoubleCache(cacheName = "abx1",key = "#key")
+public class CacheImpl implements Cache {
+    private int ttl = 60 * 10;
+
+    private String prefix = "";
+
+
+    @DoubleCache(cacheName = "abx1", key = "#key")
     public Object getIfPresent(@Nonnull Object key) {
-       return null;
+        return null;
     }
 
     @Nullable
     @DoubleCache(cacheName = "abx1", key = "#key")
     @Override
     public Object get(@NonNull Object key, @NonNull Function function) {
+        Object object = getIfPresent(key);
+        if (object != null) {
+            return object;
+        }
+
         return function.apply(key);
     }
 
@@ -46,15 +59,12 @@ public class CacheImpl implements  Cache{
     }
 
 
-//    public Object putWithReturn(@NonNull Object key, @NonNull Object val) {
-//        return val;
-//    }
-
     @Override
     public void putAll(@NonNull Map map) {
 
     }
 
+    @DoubleCache(cacheName = "abx1", key = "#key", type = CacheType.DELETE)
     @Override
     public void invalidate(@NonNull Object o) {
 
