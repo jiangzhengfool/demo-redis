@@ -1,18 +1,13 @@
 package com.example.demoredis;
 
-import com.example.demoredis.pojo.Order;
 import com.example.demoredis.service.CacheImpl;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.util.Collections;
-import java.util.TreeMap;
-
-import static com.example.demoredis.util.ElParser.parse;
 
 @SpringBootTest
 class DemoRedisApplicationTests {
@@ -26,17 +21,13 @@ class DemoRedisApplicationTests {
 	public void test01() {
 
 
-
-		Cache cache234 = (Cache)cache.get("123456789", (key) -> {
+		Cache cache234 = (Cache) cache.get("123456789", (key) -> {
 			return cache.get(key, k -> Caffeine
 					.newBuilder()
 					.maximumSize(1_0000)
 					.build());
 		});
-		cache234.get("789@",(key)->{
-			return  789;
-		});
-
+		cache234.put("789@", "790");
 
 
 	}

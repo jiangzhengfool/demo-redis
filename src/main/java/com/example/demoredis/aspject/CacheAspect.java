@@ -1,28 +1,22 @@
 package com.example.demoredis.aspject;
 
 
-
 import com.example.demoredis.annotations.DoubleCache;
 import com.example.demoredis.enums.CacheType;
 import com.example.demoredis.util.ElParser;
 import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Cache.*;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -71,8 +65,9 @@ public class CacheAspect  {
 
         //强制更新
         if (annotation.type()== CacheType.PUT){
-            Object object = point.proceed();
-            redisTemplate.opsForValue().set(realKey, object,annotation.l2TimeOut(), TimeUnit.SECONDS);
+//            Object object = point.proceed();
+            Object object = ElParser.parse("#val", treeMap);
+            redisTemplate.opsForValue().set(realKey, object, annotation.l2TimeOut(), TimeUnit.SECONDS);
             cache.put(realKey, object);
             return object;
         }

@@ -2,6 +2,7 @@ package com.example.demoredis.service;
 
 
 import com.example.demoredis.annotations.DoubleCache;
+import com.example.demoredis.enums.CacheType;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Policy;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
@@ -9,17 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Scope;
-import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 //@Scope("prototype")
@@ -32,7 +27,7 @@ public class CacheImpl implements  Cache{
     }
 
     @Nullable
-    @DoubleCache(cacheName = "abx",key="#key")
+    @DoubleCache(cacheName = "abx1", key = "#key")
     @Override
     public Object get(@NonNull Object key, @NonNull Function function) {
         return function.apply(key);
@@ -40,13 +35,20 @@ public class CacheImpl implements  Cache{
 
     @Override
     public @NonNull Map getAll(@NonNull Iterable keys, @NonNull Function mappingFunction) {
-        return Cache.super.getAll(keys, mappingFunction);
+        throw new UnsupportedOperationException("该方法尚未实现");
     }
+
 
     @Override
-    public void put(@NonNull Object o, @NonNull Object o2) {
+    @DoubleCache(cacheName = "abx1", key = "#key", type = CacheType.PUT)
+    public void put(@NonNull Object key, @NonNull Object val) {
 
     }
+
+
+//    public Object putWithReturn(@NonNull Object key, @NonNull Object val) {
+//        return val;
+//    }
 
     @Override
     public void putAll(@NonNull Map map) {
