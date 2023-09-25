@@ -17,9 +17,12 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -37,7 +40,12 @@ public class CacheAspect  {
     @Resource(name = "caffeineCache")
     private Cache cache;
     @Resource
-    private  RedisTemplate redisTemplate;
+    private  RedisTemplate<String, Object> redisTemplate;
+
+    @PostConstruct
+    void init(){
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+    }
 
 
     @Pointcut("@annotation(com.example.demoredis.annotations.DoubleCache)")
@@ -74,6 +82,8 @@ public class CacheAspect  {
             cache.invalidate(realKey);
             return point.proceed();
         }
+
+
 
         //读写，查询Caffeine
         Object caffeineCache = cache.getIfPresent(realKey);

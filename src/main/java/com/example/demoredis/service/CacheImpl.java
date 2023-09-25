@@ -26,7 +26,7 @@ import java.util.function.Function;
 @Service
 @Slf4j
 public class CacheImpl implements  Cache{
-    @DoubleCache(cacheName = "abx",key="#key")
+    @DoubleCache(cacheName = "abx1",key = "#key")
     public Object getIfPresent(@Nonnull Object key) {
        return null;
     }
@@ -34,8 +34,8 @@ public class CacheImpl implements  Cache{
     @Nullable
     @DoubleCache(cacheName = "abx",key="#key")
     @Override
-    public Object get(@NonNull Object o, @NonNull Function function) {
-        return function.apply(o);
+    public Object get(@NonNull Object key, @NonNull Function function) {
+        return function.apply(key);
     }
 
     @Override

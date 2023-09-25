@@ -3,6 +3,7 @@ package com.example.demoredis;
 import com.example.demoredis.pojo.Order;
 import com.example.demoredis.service.CacheImpl;
 import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,16 +22,24 @@ class DemoRedisApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-//	@Test
-//	public void test01() {
-//
-//		System.out.println(cache.getIfPresent("123"));
-//
-//		System.out.println(cache.get("123", (k -> {
-//			return Collections.singletonList("1715存在");
-//		})));
-//		System.out.println(cache.getIfPresent("123"));
-//	}
+	@Test
+	public void test01() {
+
+
+
+		Cache cache234 = (Cache)cache.get("123456789", (key) -> {
+			return cache.get(key, k -> Caffeine
+					.newBuilder()
+					.maximumSize(1_0000)
+					.build());
+		});
+		cache234.get("789@",(key)->{
+			return  789;
+		});
+
+
+
+	}
 	@Test
 	public void test() {
 //		String elString="#order.money";
@@ -56,5 +65,14 @@ class DemoRedisApplicationTests {
 		System.out.println(cache.getIfPresent("3334"));
 		System.out.println(cache.getIfPresent("3334"));
 	}
+	@Test
+	public void test03() {
 
+//		System.out.println(cache.getIfPresent("123"));
+
+		System.out.println(cache.get("123", (k -> {
+			return Collections.singletonList("1715存在");
+		})));
+//		System.out.println(cache.getIfPresent("123"));
+	}
 }
