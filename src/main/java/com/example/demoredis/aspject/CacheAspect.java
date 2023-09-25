@@ -40,6 +40,7 @@ public class CacheAspect  {
     @PostConstruct
     void init(){
         redisTemplate.setKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
     }
 
 
@@ -75,7 +76,7 @@ public class CacheAspect  {
         String prefix = (String) f.get(point.getTarget());
 
         DoubleCache annotation = method.getAnnotation(DoubleCache.class);
-        String elResult = ElParser.parse(annotation.key(), treeMap);
+        String elResult = (String) ElParser.parse(annotation.key(), treeMap);
         String realKey = annotation.cacheName() + prefix + elResult;
 
 

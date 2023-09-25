@@ -16,6 +16,7 @@ class DemoRedisApplicationTests1 {
 
 	@Test
 	void contextLoads() {
+		cache.put("1747", "cache234");
 	}
 
 	@Test
@@ -28,7 +29,11 @@ class DemoRedisApplicationTests1 {
 					.maximumSize(1_0000)
 					.build());
 		});
-		cache234.put("789@", "790");
+		cache234.put("1747", "test");
+		cache.put("1747", cache234);
+		cache234 = (Cache) cache.getIfPresent("1747");
+
+		System.out.println(cache234.getIfPresent("1747"));
 
 
 	}
