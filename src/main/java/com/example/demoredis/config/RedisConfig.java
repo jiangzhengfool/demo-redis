@@ -1,8 +1,6 @@
 package com.example.demoredis.config;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.cache.CacheManager;
@@ -47,32 +45,9 @@ public class RedisConfig {
         return template;
     }
 
-    /**
-     * 配置使用注解的时候缓存配置，默认是序列化反序列化的形式，加上此配置则为 json 形式
-     */
-//    @Bean
-//    public CacheManager cacheManager(RedisConnectionFactory factory) {
-//        // 配置序列化
-//        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
-//
-//        RedisCacheConfiguration redisCacheConfiguration = config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())).serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
-//
-//        return RedisCacheManager.builder(factory).cacheDefaults(redisCacheConfiguration).build();
-//    }
     @Bean
     public RedisCacheWriter redisCacheWriter(RedisConnectionFactory redisConnectionFactory) {
         return RedisCacheWriter.lockingRedisCacheWriter(redisConnectionFactory);
-    }
-    @Bean
-    public RedisCacheConfiguration redisCacheConfiguration(){
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
-        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
-        return configuration.serializeValuesWith(RedisSerializationContext.SerializationPair
-                .fromSerializer(jackson2JsonRedisSerializer));
     }
 
 }

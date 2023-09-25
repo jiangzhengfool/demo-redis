@@ -1,70 +1,60 @@
 package com.example.demoredis.service;
 
-import com.example.demoredis.annotations.TimeToLive;
+
+import com.example.demoredis.annotations.DoubleCache;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Policy;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-@Scope("prototype")
-@Service
 //@Scope("prototype")
+@Service
 @Slf4j
-public class CacheImpl implements Cache<Object, Object>{
-    @Nullable
-    @Override
-    @Cacheable(value = "value#3", key = "#key")
+public class CacheImpl implements  Cache{
+    @DoubleCache(cacheName = "abx",key="#key")
     public Object getIfPresent(@Nonnull Object key) {
-        return null;
+       return null;
     }
 
     @Nullable
-    @CachePut(value = "value#3", key = "#key")
-    @TimeToLive
+    @DoubleCache(cacheName = "abx",key="#key")
     @Override
-    public Object get(@Nonnull Object key, @Nonnull Function<? super Object, ?> mappingFunction) {
-
-        return  mappingFunction.apply(key);
+    public Object get(@NonNull Object o, @NonNull Function function) {
+        return function.apply(o);
     }
 
-    @Nonnull
     @Override
-    public Map<Object, Object> getAllPresent(@Nonnull Iterable<?> keys) {
-        return null;
+    public @NonNull Map getAll(@NonNull Iterable keys, @NonNull Function mappingFunction) {
+        return Cache.super.getAll(keys, mappingFunction);
     }
 
-
-
     @Override
-    public void put(@Nonnull Object key, @Nonnull Object value) {
-        System.out.println(key);
+    public void put(@NonNull Object o, @NonNull Object o2) {
 
     }
 
     @Override
-    public void putAll(@Nonnull Map<?, ?> map) {
+    public void putAll(@NonNull Map map) {
 
     }
 
     @Override
-    public void invalidate(@Nonnull Object key) {
-
-    }
-
-    @Override
-    public void invalidateAll(@Nonnull Iterable<?> keys) {
+    public void invalidate(@NonNull Object o) {
 
     }
 
@@ -74,19 +64,17 @@ public class CacheImpl implements Cache<Object, Object>{
     }
 
     @Override
-    public long estimatedSize() {
+    public @NonNegative long estimatedSize() {
         return 0;
     }
 
-    @Nonnull
     @Override
-    public CacheStats stats() {
+    public @NonNull CacheStats stats() {
         return null;
     }
 
-    @Nonnull
     @Override
-    public ConcurrentMap<Object, Object> asMap() {
+    public @NonNull ConcurrentMap asMap() {
         return null;
     }
 
@@ -95,10 +83,20 @@ public class CacheImpl implements Cache<Object, Object>{
 
     }
 
-    @Nonnull
     @Override
-    public Policy<Object, Object> policy() {
+    public @NonNull Policy policy() {
         return null;
     }
+
+    @Override
+    public void invalidateAll(@NonNull Iterable iterable) {
+
+    }
+
+    @Override
+    public @NonNull Map getAllPresent(@NonNull Iterable iterable) {
+        return null;
+    }
+
 
 }
