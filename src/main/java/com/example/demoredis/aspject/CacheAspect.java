@@ -39,6 +39,7 @@ public class CacheAspect  {
 
     @PostConstruct
     void init(){
+        // 否则会使用默认的序列化，导致key出现一些乱码前缀
         redisTemplate.setKeySerializer(new StringRedisSerializer());
 //        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
     }
