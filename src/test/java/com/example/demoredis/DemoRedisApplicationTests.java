@@ -16,6 +16,16 @@ class DemoRedisApplicationTests {
 
 	@Test
 	void contextLoads() {
+		int i = 0;
+		cache.setTtl(600);
+		cache.setPrefix("ttl");
+		System.out.println("start");
+		while (true) {
+			cache.put(i + "", i);
+			System.out.println(i);
+			i++;
+		}
+
 	}
 	@Test
 	public void test01() {

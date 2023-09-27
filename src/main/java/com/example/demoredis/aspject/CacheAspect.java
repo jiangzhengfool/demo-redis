@@ -98,7 +98,7 @@ public class CacheAspect  {
 
 
 
-        //读写，查询Caffeine
+        //查询Caffeine
         Object caffeineCache = cache.getIfPresent(realKey);
         if (Objects.nonNull(caffeineCache)) {
             log.info("get data from caffeine");
@@ -113,7 +113,6 @@ public class CacheAspect  {
             return redisCache;
         }
 
-        log.info("get data from database");
         Object object = point.proceed();
         if (Objects.nonNull(object)){
             //写入Redis
