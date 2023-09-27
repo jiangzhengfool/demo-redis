@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @Aspect
-//@AllArgsConstructor
+
 public class CacheAspect  {
 
     @Resource(name = "caffeineCache")
@@ -47,9 +47,6 @@ public class CacheAspect  {
 
     @PostConstruct
     void init() {
-//        // 否则会使用默认的序列化，导致key出现一些乱码前缀
-//        redisTemplate.setKeySerializer(new StringRedisSerializer());
-////        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 
         GenericObjectPoolConfig redisPool = new GenericObjectPoolConfig();
 
@@ -61,14 +58,11 @@ public class CacheAspect  {
 
         LettuceClientConfiguration clientConfiguration = LettucePoolingClientConfiguration.builder().poolConfig(redisPool).build();
 
-
         LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(secondaryRedisClusterConfig, clientConfiguration);
         lettuceConnectionFactory.afterPropertiesSet();
 
-
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(lettuceConnectionFactory);
-
 
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
         // key采用String的序列化方式
