@@ -4,7 +4,6 @@ import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import javax.annotation.Resource;
 import java.util.concurrent.atomic.LongAdder;
 
 public class LongAdderSyn {
@@ -13,7 +12,6 @@ public class LongAdderSyn {
 
 	private Long sum;
 
-	@Resource
 	private RedisTemplate<String, Object> redisTemplate;
 
 
