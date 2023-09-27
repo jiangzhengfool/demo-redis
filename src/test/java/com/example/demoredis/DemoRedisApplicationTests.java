@@ -8,15 +8,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.util.Collections;
+import java.util.concurrent.atomic.LongAdder;
 
 @SpringBootTest
 class DemoRedisApplicationTests {
 	@Resource(name = "cacheImpl")
 	private CacheImpl cache;
 
+	@Resource(name = "cacheImpl")
+	private CacheImpl cache1;
+
 	@Test
 	void contextLoads() {
 	}
+
 	@Test
 	public void test01() {
 		cache.setTtl(600);
@@ -57,6 +62,7 @@ class DemoRedisApplicationTests {
 		System.out.println(cache.getIfPresent("3334"));
 		System.out.println(cache.getIfPresent("3334"));
 	}
+
 	@Test
 	public void test03() {
 
@@ -66,5 +72,21 @@ class DemoRedisApplicationTests {
 			return Collections.singletonList("1715存在");
 		})));
 //		System.out.println(cache.getIfPresent("123"));
+	}
+
+	private Cache<String, LongAdder> getMinuteCache1(String key) {
+		cache1.setPrefix(key);
+		return cache1;
+	}
+
+	@Test
+	void test1102() {
+		Cache c = getMinuteCache1("111");
+		c.get("999", (key) -> {
+			return 888;
+		});
+		c.get("9919", (key) -> {
+			return new LongAdder();
+		});
 	}
 }

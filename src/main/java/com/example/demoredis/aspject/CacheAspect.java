@@ -30,15 +30,15 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Aspect
 //@AllArgsConstructor
-public class CacheAspect  {
+public class CacheAspect {
 
     @Resource(name = "caffeineCache")
     private Cache cache;
-    @Resource
-    private  RedisTemplate<String, Object> redisTemplate;
+    @Resource(name = "redisTemplate1")
+    private RedisTemplate<Object, Object> redisTemplate;
 
     @PostConstruct
-    void init(){
+    void init() {
         // 否则会使用默认的序列化，导致key出现一些乱码前缀
         redisTemplate.setKeySerializer(new StringRedisSerializer());
 //        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());

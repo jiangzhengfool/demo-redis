@@ -9,11 +9,11 @@ import java.util.concurrent.atomic.LongAdder;
 
 public class CacheTest {
 
+
 	private final Cache<String, Cache<String, LongAdder>> cache = Caffeine
 			.newBuilder()
 			.expireAfterWrite(10, TimeUnit.MINUTES)  //最多缓存10分钟
 			.build();
-
 
 
 	private Cache<String, LongAdder> getMinuteCache(String key) {
@@ -41,7 +41,7 @@ public class CacheTest {
 //		System.out.println(caffeineCache.getIfPresent("def"));
 
 
-
 	}
+
 
 }
