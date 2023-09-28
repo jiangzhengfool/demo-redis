@@ -2,10 +2,12 @@ package com.example.demoredis;
 
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.concurrent.atomic.LongAdder;
 
+@Slf4j
 public class LongAdderSyn {
 	private String key;
 	private LongAdder increase;
@@ -20,14 +22,15 @@ public class LongAdderSyn {
 		this.sum = new Long(0L);
 		this.key = key;
 		redisTemplate = (RedisTemplate<String, Object>) SpringUtil.getBean("redisTemplate");
-		syn();
+
+		syn1();
 	}
 
 
 	public void increment() {
-		synchronized (this) {
+//		synchronized (this) {
 			increase.increment();
-		}
+//		}
 
 	}
 
@@ -53,6 +56,38 @@ public class LongAdderSyn {
 				}
 				System.out.println("sum:" + sum);
 				sum = redisTemplate.opsForValue().increment(key, inc);
+
+
+			}
+		});
+
+		CronUtil.setMatchSecond(true);
+		CronUtil.start();
+
+
+	}
+
+	void syn1() {
+		log.info("init start");
+
+		redisTemplate.opsForValue().setIfAbsent(key, 0);
+		log.info("init success");
+		CronUtil.schedule("0/1 * * * * ?", new Task() {
+			@Override
+			public void execute() {
+				long inc = 0L;
+//				synchronized (this) {
+				inc = increase.longValue();
+//					try {
+//						Thread.sleep(10000);
+//					} catch (InterruptedException e) {
+//						throw new RuntimeException(e);
+//					}
+
+//				System.out.println("sum:" + sum);
+				sum = redisTemplate.opsForValue().increment(key, inc);
+				System.out.println("sum:" + sum);
+				increase.add(-inc);
 
 
 			}

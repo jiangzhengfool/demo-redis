@@ -4,8 +4,9 @@ spring:
     type: redis
   data:
     redis:
-      timeout: 10000ms
+      timeout: 1000ms
       host: localhost
+
 logging:
   level:
     com.xkcoding: debug

@@ -26,6 +26,8 @@ public class CacheTest {
 		// 7.设置 value 的转化格式和 key 的转化格式
 		redisTemplate.setValueSerializer(genericToStringSerializer);
 
+		redisTemplate.getConnectionFactory().getConnection().flushDb();
+
 
 	}
 
@@ -36,6 +38,11 @@ public class CacheTest {
 			.build();
 
 	@Test
+	void test02() {
+		redisTemplate.opsForValue().set("20230945", 0);
+	}
+
+	@Test
 	void test() throws InterruptedException {
 		redisTemplate.opsForValue().set("20230945", 0);
 //		CountDownLatch countDownLatch = new CountDownLatch(100);
@@ -43,7 +50,7 @@ public class CacheTest {
 			return new LongAdderSyn((String) key);
 		});
 
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 100; i++) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -87,7 +94,10 @@ public class CacheTest {
 	}
 
 	@Test
-	void test1() throws InterruptedException {
+	void
+
+
+	test1() throws InterruptedException {
 //		redisTemplate.opsForValue().set("20231023", 0);
 //		CountDownLatch countDownLatch = new CountDownLatch(100);
 
@@ -101,7 +111,8 @@ public class CacheTest {
 					});
 
 					obj.increment();
-//					countDownLatch.countDown();
+
+
 				}
 			}).start();
 		}
@@ -120,28 +131,29 @@ public class CacheTest {
 //		CountDownLatch countDownLatch = new CountDownLatch(100);
 
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 10; i++) {
 			LongAdderSyn obj = caffeineCache.get("20231023", (key) -> {
 				return new LongAdderSyn((String) key);
 			});
-			for (int j = 0; j < 100; j++) {
+			for (int j = 0; j < 10; j++) {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
 
 
 						obj.increment();
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							throw new RuntimeException(e);
-						}
+//						try {
+//							Thread.sleep(100);
+//						} catch (InterruptedException e) {
+//							throw new RuntimeException(e);
+//						}
 //
 					}
 				}).start();
 			}
 
 		}
+		System.out.println("fin");
 //		countDownLatch.await();
 
 		while (true) {
