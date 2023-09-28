@@ -47,7 +47,7 @@ public class LongAdderSyn {
 	}
 
 	public long longValue() {
-		return sum + increase.longValue();
+		return lastTimeSum + increase.longValue();
 	}
 
 
