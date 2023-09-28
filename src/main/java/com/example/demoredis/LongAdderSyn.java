@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.LongAdder;
 
 @Slf4j
 public class LongAdderSyn {
+	private String prefix;
 	private String key;
 	private LongAdder increase;
 
@@ -16,6 +17,9 @@ public class LongAdderSyn {
 
 	private RedisTemplate<String, Object> redisTemplate;
 
+	LongAdderSyn(String prefix, String key) {
+		this(prefix + key);
+	}
 
 	LongAdderSyn(String key) {
 		this.increase = new LongAdder();
