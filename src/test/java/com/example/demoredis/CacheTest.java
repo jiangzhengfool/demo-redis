@@ -41,11 +41,12 @@ public class CacheTest {
 	Cache<String, LongAdderSyn> caffeineCache = Caffeine.newBuilder()
 			.initialCapacity(128)//初始大小
 			.maximumSize(1024)//最大数量
-			.expireAfterWrite(10, TimeUnit.SECONDS)
+			.expireAfterWrite(100, TimeUnit.SECONDS)
 			.scheduler(Scheduler.forScheduledExecutorService(Executors.newScheduledThreadPool(1)))
 			.removalListener((String key, Object value, RemovalCause cause) -> {
-						CronUtil.remove(key);
-						log.info("key" + key);
+				CronUtil.remove(key);
+				redisTemplate.delete(key);
+				log.info("key" + key);
 					}
 
 			)
