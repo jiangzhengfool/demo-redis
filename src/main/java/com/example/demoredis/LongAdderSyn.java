@@ -44,11 +44,11 @@ public class LongAdderSyn {
 				long inc = 0L;
 				synchronized (this) {
 					inc = increase.longValue();
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+//					try {
+//						Thread.sleep(10000);
+//					} catch (InterruptedException e) {
+//						throw new RuntimeException(e);
+//					}
 					increase.reset();
 				}
 
