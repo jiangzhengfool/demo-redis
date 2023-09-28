@@ -9,11 +9,19 @@ import java.util.concurrent.atomic.LongAdder;
 
 @Slf4j
 public class LongAdderSyn {
+	/**
+	 * 前缀，多租户时可使用
+	 */
 	private String prefix;
+
 	private String key;
 	private LongAdder increase;
 
-	private long sum;
+	/**
+	 * 上次同步redis之和
+	 */
+
+	private long lastTimeSum;
 
 	private RedisTemplate<String, Object> redisTemplate;
 
@@ -23,7 +31,7 @@ public class LongAdderSyn {
 
 	LongAdderSyn(String key) {
 		this.increase = new LongAdder();
-		this.sum = new Long(0L);
+		this.lastTimeSum = new Long(0L);
 		this.key = key;
 		redisTemplate = (RedisTemplate<String, Object>) SpringUtil.getBean("redisTemplate");
 
@@ -58,8 +66,8 @@ public class LongAdderSyn {
 //					}
 					increase.reset();
 				}
-				System.out.println("sum:" + sum);
-				sum = redisTemplate.opsForValue().increment(key, inc);
+				System.out.println("sum:" + lastTimeSum);
+				lastTimeSum = redisTemplate.opsForValue().increment(key, inc);
 
 
 			}
@@ -85,8 +93,8 @@ public class LongAdderSyn {
 					// 此时没必同步给redis
 					return;
 				}
-				sum = redisTemplate.opsForValue().increment(key, inc);
-				log.info("sum:" + sum);
+				lastTimeSum = redisTemplate.opsForValue().increment(key, inc);
+				log.info("sum:" + lastTimeSum);
 				increase.add(-inc);
 
 
