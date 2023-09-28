@@ -41,7 +41,7 @@ public class LongAdderSyn {
 
 	void syn() {
 		redisTemplate.opsForValue().setIfAbsent(key, 0);
-		CronUtil.schedule("0/1 * * * * ?", new Task() {
+		CronUtil.schedule(key, "0/1 * * * * ?", new Task() {
 			@Override
 			public void execute() {
 				long inc = 0L;
@@ -72,7 +72,7 @@ public class LongAdderSyn {
 
 		redisTemplate.opsForValue().setIfAbsent(key, 0);
 		log.info("init success");
-		CronUtil.schedule("0/1 * * * * ?", new Task() {
+		CronUtil.schedule(key, "0/1 * * * * ?", new Task() {
 			@Override
 			public void execute() {
 				long inc = 0L;

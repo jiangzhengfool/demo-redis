@@ -1,7 +1,10 @@
 package com.example.demoredis;
 
+import cn.hutool.cron.CronUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
+import com.github.benmanes.caffeine.cache.Scheduler;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +14,7 @@ import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import javax.annotation.Resource;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -32,11 +36,19 @@ public class CacheTest {
 
 
 	}
+	//
 
 	Cache<String, LongAdderSyn> caffeineCache = Caffeine.newBuilder()
 			.initialCapacity(128)//初始大小
 			.maximumSize(1024)//最大数量
-			.expireAfterWrite(1, TimeUnit.MINUTES)  //最多缓存10分钟
+			.expireAfterWrite(10, TimeUnit.SECONDS)
+			.scheduler(Scheduler.forScheduledExecutorService(Executors.newScheduledThreadPool(1)))
+			.removalListener((String key, Object value, RemovalCause cause) -> {
+						CronUtil.remove(key);
+						log.info("key" + key);
+					}
+
+			)
 			.build();
 
 	@Test
@@ -163,7 +175,7 @@ public class CacheTest {
 		System.out.println("fin");
 		while (true) {
 			Thread.sleep(100);
-			log.info(String.valueOf(caffeineCache.getIfPresent("20231023") == null));
+//			log.info(String.valueOf(caffeineCache.getIfPresent("20231023") == null));
 
 		}
 //		countDownLatch.await();
