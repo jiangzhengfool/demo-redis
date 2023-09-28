@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import javax.annotation.Resource;
@@ -20,6 +21,10 @@ public class CacheTest {
 	void test01() {
 
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
+		GenericToStringSerializer genericToStringSerializer = new GenericToStringSerializer(Object.class);
+		// 6.序列化类，对象映射设置
+		// 7.设置 value 的转化格式和 key 的转化格式
+		redisTemplate.setValueSerializer(genericToStringSerializer);
 
 
 	}
@@ -32,15 +37,30 @@ public class CacheTest {
 
 	@Test
 	void test() throws InterruptedException {
-		LongAdderSyn obj = caffeineCache.get("key", (key) -> {
+		redisTemplate.opsForValue().set("20230945", 0);
+//		CountDownLatch countDownLatch = new CountDownLatch(100);
+		LongAdderSyn obj = caffeineCache.get("20230945", (key) -> {
 			return new LongAdderSyn((String) key);
 		});
 
-		while (true) {
-			obj.getIncrease().increment();
-			System.out.println("inc:" + obj.getIncrease().longValue());
-			Thread.sleep(1000);
+		for (int i = 0; i < 10000; i++) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+
+					obj.increment();
+//					countDownLatch.countDown();
+				}
+			}).start();
 		}
+//		countDownLatch.await();
+
+		while (true) {
+
+		}
+//		System.out.println(obj.longValue());
+
+
 //		obj.getIncrease().increment();
 //
 //		obj = caffeineCache.getIfPresent("key");
@@ -62,6 +82,34 @@ public class CacheTest {
 
 
 //		Thread.sleep(100000);
+
+
+	}
+
+	@Test
+	void test1() throws InterruptedException {
+//		redisTemplate.opsForValue().set("20231023", 0);
+//		CountDownLatch countDownLatch = new CountDownLatch(100);
+
+
+		for (int i = 0; i < 10000; i++) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					LongAdderSyn obj = caffeineCache.get("20231023", (key) -> {
+						return new LongAdderSyn((String) key);
+					});
+
+					obj.increment();
+//					countDownLatch.countDown();
+				}
+			}).start();
+		}
+//		countDownLatch.await();
+
+		while (true) {
+
+		}
 
 
 	}

@@ -10,7 +10,7 @@ public class LongAdderSyn {
 	private String key;
 	private LongAdder increase;
 
-	private Long sum;
+	private long sum;
 
 	private RedisTemplate<String, Object> redisTemplate;
 
@@ -23,51 +23,33 @@ public class LongAdderSyn {
 		syn();
 	}
 
-	public String getKey() {
-		return key;
-	}
 
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	public RedisTemplate<String, Object> getRedisTemplate() {
-		return redisTemplate;
-	}
-
-	public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
-		this.redisTemplate = redisTemplate;
-	}
-
-
-	public LongAdder getIncrease() {
+	public void increment() {
 		synchronized (this) {
-			return increase;
+			increase.increment();
 		}
 
 	}
 
-	public void setIncrease(LongAdder increase) {
-		this.increase = increase;
-	}
-
-	public Long getSum() {
+	public long longValue() {
 		return sum + increase.longValue();
-	}
-
-	public void setSum(Long sum) {
-		this.sum = sum;
 	}
 
 
 	void syn() {
+		redisTemplate.opsForValue().setIfAbsent(key, 0);
 		CronUtil.schedule("0/1 * * * * ?", new Task() {
 			@Override
 			public void execute() {
 				long inc = 0L;
 				synchronized (this) {
 					inc = increase.longValue();
-					increase = new LongAdder();
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
+					increase.reset();
 				}
 
 				sum = redisTemplate.opsForValue().increment(key, inc);
