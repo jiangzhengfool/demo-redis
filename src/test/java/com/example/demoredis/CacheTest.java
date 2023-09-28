@@ -113,4 +113,41 @@ public class CacheTest {
 
 
 	}
+
+	@Test
+	void test2() throws InterruptedException {
+//		redisTemplate.opsForValue().set("20231023", 0);
+//		CountDownLatch countDownLatch = new CountDownLatch(100);
+
+
+		for (int i = 0; i < 100; i++) {
+			LongAdderSyn obj = caffeineCache.get("20231023", (key) -> {
+				return new LongAdderSyn((String) key);
+			});
+			for (int j = 0; j < 100; j++) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+
+
+						obj.increment();
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							throw new RuntimeException(e);
+						}
+//
+					}
+				}).start();
+			}
+
+		}
+//		countDownLatch.await();
+
+		while (true) {
+
+		}
+
+
+	}
 }

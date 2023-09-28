@@ -51,9 +51,9 @@ public class LongAdderSyn {
 //					}
 					increase.reset();
 				}
-
-				sum = redisTemplate.opsForValue().increment(key, inc);
 				System.out.println("sum:" + sum);
+				sum = redisTemplate.opsForValue().increment(key, inc);
+
 
 			}
 		});
