@@ -86,7 +86,7 @@ public class LongAdderSyn {
 
 //				System.out.println("sum:" + sum);
 				sum = redisTemplate.opsForValue().increment(key, inc);
-				System.out.println("sum:" + sum);
+				log.info("sum:" + sum);
 				increase.add(-inc);
 
 

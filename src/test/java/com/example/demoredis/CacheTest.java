@@ -2,6 +2,7 @@ package com.example.demoredis;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @SpringBootTest
 public class CacheTest {
 	@Resource
@@ -34,7 +36,7 @@ public class CacheTest {
 	Cache<String, LongAdderSyn> caffeineCache = Caffeine.newBuilder()
 			.initialCapacity(128)//初始大小
 			.maximumSize(1024)//最大数量
-			.expireAfterWrite(10, TimeUnit.MINUTES)  //最多缓存10分钟
+			.expireAfterWrite(1, TimeUnit.MINUTES)  //最多缓存10分钟
 			.build();
 
 	@Test
@@ -132,6 +134,11 @@ public class CacheTest {
 
 
 		for (int i = 0; i < 10; i++) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 			LongAdderSyn obj = caffeineCache.get("20231023", (key) -> {
 				return new LongAdderSyn((String) key);
 			});
@@ -154,11 +161,12 @@ public class CacheTest {
 
 		}
 		System.out.println("fin");
-//		countDownLatch.await();
-
 		while (true) {
+			Thread.sleep(100);
+			log.info(String.valueOf(caffeineCache.getIfPresent("20231023") == null));
 
 		}
+//		countDownLatch.await();
 
 
 	}
