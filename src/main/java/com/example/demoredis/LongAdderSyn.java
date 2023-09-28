@@ -76,15 +76,11 @@ public class LongAdderSyn {
 			@Override
 			public void execute() {
 				long inc = 0L;
-//				synchronized (this) {
 				inc = increase.longValue();
-//					try {
-//						Thread.sleep(10000);
-//					} catch (InterruptedException e) {
-//						throw new RuntimeException(e);
-//					}
-
-//				System.out.println("sum:" + sum);
+				if (inc == 0) {
+					// 此时没必同步给redis
+					return;
+				}
 				sum = redisTemplate.opsForValue().increment(key, inc);
 				log.info("sum:" + sum);
 				increase.add(-inc);
